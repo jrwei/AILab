@@ -11,7 +11,7 @@ import java.sql.Statement;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by admin on 2017/10/25.
+ * Created by weiguo on 2017/10/25.
  */
 
 public class DBManager {
