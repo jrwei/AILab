@@ -1,33 +1,26 @@
 package com.ailab.ailab;
 
-import android.database.SQLException;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.ResultSet;
-
-import db.DBManager;
+import dbc.CallBackListener;
+import dbc.DBThread;
 
 public class MainActivity extends AppCompatActivity {
-    private String sql_one = "SELECT COUNT(*) FROM environment_humi WHERE DATA > 50";
-    private ResultSet rs = null;
+    private String sql_one = "SELECT COUNT(*) FROM Environment_Humi WHERE DATA > 50";
+/*    private ResultSet rs = null;
     private DBManager sql;
-    private String data;
+    private String data;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button button1 = (Button) findViewById(R.id.button_db);
-        button1.setOnClickListener(new View.OnClickListener() {
+       /* button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Thread(
@@ -40,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
                                 }catch(SQLException e){
                                     Log.d("MainActivity","连接数据库失败");
                                 }
+
                                 try{
                                     rs = sql.queryBySql(sql_one);
                                 }catch (SQLException e){
@@ -62,6 +56,29 @@ public class MainActivity extends AppCompatActivity {
                 ).start();
                 Toast.makeText(MainActivity.this,"查询结果为："+data,Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
+
+       button1.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               DBThread.SqlQuery(sql_one, new CallBackListener() {
+                   @Override
+                   public void onFinish(final String info) {
+                       runOnUiThread(new Runnable() {
+                           @Override
+                           public void run() {
+                               Toast.makeText(MainActivity.this, "查询数值大于50的次数为："+ info, Toast.LENGTH_SHORT).show();
+                           }
+                       });
+
+                   }
+
+                   @Override
+                   public void onError(Exception e) {
+                       e.printStackTrace();
+                   }
+               });
+           }
+       });
     }
 }
